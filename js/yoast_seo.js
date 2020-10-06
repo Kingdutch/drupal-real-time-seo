@@ -308,11 +308,9 @@
     // Get the label thresholds from high to low.
     var thresholds = Object.keys(this.config.score_rules).sort().reverse();
 
-    console.log(thresholds);
-
     for (var i in thresholds) {
       var minimum = thresholds[i];
-      console.log(score, minimum);
+
       if (score >= minimum) {
         return this.config.score_rules[minimum];
       }
