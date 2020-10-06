@@ -10,6 +10,14 @@ use Drupal\Tests\BrowserTestBase;
  * @group yoast_seo_ui
  */
 class ConfigurationPageTest extends BrowserTestBase {
+
+  /**
+   * The theme to use for this test.
+   *
+   * @var string
+   */
+  protected $defaultTheme = 'stark';
+
   /**
    * Modules to enable.
    *
