@@ -68,7 +68,6 @@ class AnalysisFormHandler implements EntityHandlerInterface {
    *   The ajax response.
    */
   public function analysisSubmitAjax(array &$form, FormStateInterface $form_state) {
-
     // Prevent firing accidental submissions from entity builder callbacks.
     $form_state->setTemporaryValue('entity_validated', FALSE);
 
@@ -91,7 +90,11 @@ class AnalysisFormHandler implements EntityHandlerInterface {
     $this->messenger->deleteAll();
 
     $response = new AjaxResponse();
-    $response->addCommand(new InvokeCommand('body', 'trigger', ['updateSeoData', $entity_data]));
+    $response->addCommand(new InvokeCommand(
+      'body',
+      'trigger',
+      ['updateSeoData', $entity_data])
+    );
     return $response;
   }
 
@@ -104,6 +107,22 @@ class AnalysisFormHandler implements EntityHandlerInterface {
    *   The current state of the form.
    */
   public function addAnalysisSubmit(array &$element, FormStateInterface $form_state) {
+    // Tell the form API not to change the build id as this causes issues with
+    // other modules like paragraphs due to the form cache. See
+    // https://www.drupal.org/project/yoast_seo/issues/2992284#comment-13134728
+    // This must be called here because in `analysisSubmitAjax` it would be too
+    // late.
+    $triggeringElement = $form_state->getTriggeringElement();
+    if ($triggeringElement !== NULL && end($triggeringElement['#parents']) === 'yoast_seo_preview_button') {
+      $form_state->addRebuildInfo(
+        'copy',
+        [
+          '#build_id' => TRUE,
+          '#action' => TRUE,
+        ]
+      );
+    }
+
     $element['yoast_seo_preview_button'] = [
       '#type' => 'button',
       '#value' => t('Seo preview'),
