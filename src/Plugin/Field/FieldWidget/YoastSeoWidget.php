@@ -173,8 +173,8 @@ class YoastSeoWidget extends WidgetBase implements ContainerFactoryPluginInterfa
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     foreach ($values as &$value) {
-      $value['title']         = ($this->getSetting('edit_title') ? $value['edit_title'] : null);
-      $value['description']   = ($this->getSetting('edit_description') ? $value['edit_description'] : null);
+      $value['title']       = ($this->getSetting('edit_title') ? $value['edit_title'] : NULL);
+      $value['description'] = ($this->getSetting('edit_description') ? $value['edit_description'] : NULL);
     }
     return $values;
   }
@@ -239,8 +239,8 @@ class YoastSeoWidget extends WidgetBase implements ContainerFactoryPluginInterfa
     global $base_root;
     $score_rules = $this->seoManager->getScoreRules();
 
-    // TODO: Use dependency injection for language manager.
-    // TODO: Translate to something usable by YoastSEO.js.
+    // @todo Use dependency injection for language manager.
+    // @todo Translate to something usable by YoastSEO.js.
     $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
 
     $configuration = [

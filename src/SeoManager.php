@@ -10,7 +10,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 
 /**
- * Class SeoManager.
+ * Utility service for the Real-Time SEO module.
  *
  * @package Drupal\yoast_seo
  */
@@ -48,6 +48,8 @@ class SeoManager {
    *   Entity Type Bundle Info service.
    * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager
    *   Entity Field Manager service.
+   * @param \Drupal\Core\StringTranslation\TranslationInterface $stringTranslation
+   *   The string traslation service.
    */
   public function __construct(EntityTypeManagerInterface $entityTypeManager, EntityTypeBundleInfoInterface $entityTypeBundleInfo, EntityFieldManagerInterface $entityFieldManager, TranslationInterface $stringTranslation) {
     $this->entityTypeBundleInfo = $entityTypeBundleInfo;
@@ -99,7 +101,7 @@ class SeoManager {
    * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
    *   The entity for which to find the Real-Time SEO field.
    *
-   * @return NULL|\Drupal\Core\Field\FieldItemListInterface
+   * @return null|\Drupal\Core\Field\FieldItemListInterface
    *   The field item list of the field or NULL if no RTSEO field was found.
    */
   public function getSeoField(FieldableEntityInterface $entity) {
@@ -120,7 +122,7 @@ class SeoManager {
   /**
    * Get the status for a given score.
    *
-   * TODO: Move this back to something like an SEO Assessor.
+   * @todo Move this back to something like an SEO Assessor.
    *
    * @param int $score
    *   Score in points.
@@ -144,7 +146,7 @@ class SeoManager {
   /**
    * Retrieves the score rules from configuration.
    *
-   * @return string[] rules
+   * @return string[]
    *   A list of labels indexed by the minimum score required. Ordered from high
    *   to low.
    */
@@ -153,6 +155,7 @@ class SeoManager {
 
     // Ensure rules are sorted from high to low score.
     ksort($rules);
-    return array_reverse($rules, true);
+    return array_reverse($rules, TRUE);
   }
+
 }

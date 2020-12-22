@@ -51,10 +51,11 @@
       String.prototype.endsWith = function (searchStr, Position) {
         // This works much better than >= because
         // it compensates for NaN:
-        if (!(Position < this.length))
+        if (!(Position < this.length)) {
           Position = this.length;
-        else
-          Position |= 0; // round position
+        } else {
+          Position | = 0; // round position
+        }
         return this.substr(Position - searchStr.length,
           searchStr.length) === searchStr;
       };
@@ -73,7 +74,6 @@
         }
       }
     }
-
 
     if (typeof RealTimeSEO === 'undefined') {
       $('#' + config.targets.output).html('<p><strong>' + Drupal.t('It looks like something went wrong when we tried to load the Real-Time SEO content analysis library. Please check it the module is installed correctly.') + '</strong></p>');
@@ -223,7 +223,6 @@
     this.app.getData();
     this.app.runAnalyzer();
   };
-
 
   /**
    * Sends a request to our Drupal endpoint to refresh our local data.

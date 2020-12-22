@@ -27,7 +27,7 @@ class YoastSeoFormatter extends FormatterBase {
     foreach ($items as $delta => $item) {
       $status = $yoast_seo_manager->getScoreStatus($item->status);
 
-      // TODO : find a way to give a weight, so the column doesn't appear
+      // @todo find a way to give a weight, so the column doesn't appear
       // at the end.
       // Get template for the snippet.
       $overall_score_tpl = [

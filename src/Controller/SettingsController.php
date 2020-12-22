@@ -34,7 +34,7 @@ class SettingsController extends ControllerBase {
     }
     elseif ($xmlsitemap_enabled) {
       // Inform the user about altering the XML Sitemap configuration on the
-      // module configuration page if he has access to do so.
+      // module configuration page if they have access to do so.
       if (\Drupal::currentUser()->hasPermission('administer xmlsitemap')) {
         $xmlsitemap_description = $this->t(
           'You can configure the XML Sitemap settings at the @url.',
@@ -53,7 +53,7 @@ class SettingsController extends ControllerBase {
     }
     elseif (\Drupal::moduleHandler()->moduleExists('simple_sitemap')) {
       // Inform the user about altering the XML Sitemap configuration on the
-      // module configuration page if he has access to do so.
+      // module configuration page if they have access to do so.
       if (\Drupal::currentUser()->hasPermission('administer simple_sitemap')) {
         $xmlsitemap_description = $this->t(
           'You can configure the Simple XML Sitemap settings at the @url.',
@@ -71,7 +71,7 @@ class SettingsController extends ControllerBase {
       }
     }
     else {
-      // XML Sitemap is not enabled, inform the user he should think about
+      // XML Sitemap is not enabled, inform the user they should think about
       // installing and enabling it.
       $xmlsitemap_description = $this->t(
         'You currently do not have a sitemap module enabled. We strongly recommend you to install a sitemap module. You can download the <a href="@project1-url">@project1-name</a> or <a href="@project2-url">@project2-name</a> module to use as sitemap generator.',
@@ -92,7 +92,7 @@ class SettingsController extends ControllerBase {
     ];
 
     // Inform the user about altering the Metatag configuration on the module
-    // configuration page if he has access to do so.
+    // configuration page if they have access to do so.
     // We do not check if the module is enabled since it is our dependency.
     if (\Drupal::currentUser()->hasPermission('administer meta tags')) {
       $metatag_description = $this->t(

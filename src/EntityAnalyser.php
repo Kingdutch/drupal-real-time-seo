@@ -139,7 +139,7 @@ class EntityAnalyser {
   public function renderEntity(EntityInterface $entity) {
     $type = $entity->getEntityTypeId();
     $view_builder = $this->entityTypeManager->getViewBuilder($type);
-    // TODO: Make the view mode configurable in Yoast SEO settings.
+    // @todo Make the view mode configurable in Yoast SEO settings.
     $render_array = $view_builder->view($entity, 'full');
     return $this->renderer->renderRoot($render_array);
   }
@@ -154,7 +154,7 @@ class EntityAnalyser {
    * @param array $metatags
    *   The metatags array that contains the tokens.
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   The entity to use as context
+   *   The entity to use as context.
    */
   protected function replaceContextAwareTokens(array &$metatags, EntityInterface $entity) {
     foreach ($metatags as $tag => $value) {
