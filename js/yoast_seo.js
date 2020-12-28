@@ -54,7 +54,7 @@
         if (!(Position < this.length)) {
           Position = this.length;
         } else {
-          Position | = 0; // round position
+          Position |= 0; // round position
         }
         return this.substr(Position - searchStr.length,
           searchStr.length) === searchStr;
