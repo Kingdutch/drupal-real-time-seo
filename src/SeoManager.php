@@ -151,7 +151,7 @@ class SeoManager {
    *   to low.
    */
   public function getScoreRules() {
-    $rules = \Drupal::config('yoast_seo.settings')->get('score_rules');
+    $rules = \Drupal::config('yoast_seo.settings')->get('score_rules') ?? [];
 
     // Ensure rules are sorted from high to low score.
     ksort($rules);
