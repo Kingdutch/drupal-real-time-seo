@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  web:
+    build: docker/web
+    volumes:
+      - ./:/var/www
+    links:
+      - db
+      - maildev
+    ports:
+      - "80:80"
+    container_name: "rtseo_web"
+
+  db:
+    image: mariadb:10.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: rtseo
+    volumes:
+      - db_data:/var/lib/mysql
+    command: mysqld --max_allowed_packet=16M
+    ports:
+      - "3306"
+    container_name: "rtseo_db"
+
+  maildev:
+    image: maildev/maildev
+    ports:
+      - "1080:1080"
+    container_name: "rtseo_maildev"
+
+volumes:
+  db_data:
