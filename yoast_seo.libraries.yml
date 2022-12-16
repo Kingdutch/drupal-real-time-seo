@@ -11,8 +11,7 @@ yoast_seo_core:
     js/yoast_seo.js: {}
   dependencies:
       - core/jquery
-      - core/jquery.once
-      - core/jquery.form
+      - core/once
       - core/drupal
       - core/drupalSettings
       - yoast_seo/analytics_core

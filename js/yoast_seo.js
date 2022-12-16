@@ -16,7 +16,7 @@
         throw 'No settings specified for the YoastSEO analysis library.';
       }
 
-      $('body', context).once('realtime-seo').each(function () {
+      once('realtime-seo', 'body', context).forEach(function () {
         // TODO: This fails if there are multiple forms.
         var $form = $('form').first();
 
@@ -139,7 +139,7 @@
     this.$form.change(this.handleChange.bind(this));
 
     // Set up event handlers for editable properties.
-    this.$form.find('#yoast-snippet').once('yoast_seo-editable').focusout(this.handleBlur.bind(this));
+    once('yoast_seo-editable', '#yoast-snippet', this.$form.get(0)).forEach(el => $(el).focusout(this.handleBlur.bind(this)));
 
     // Set up our event listener for CKEditor instances if any.
     // We do this in a setTimeout to allow CKEDITOR to load.
