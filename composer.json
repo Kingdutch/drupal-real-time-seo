@@ -1,0 +1,73 @@
+{
+    "name": "kingdutch/rtseo_dev",
+    "description": "Development environment for the Drupal Real-Time SEO module",
+    "type": "project",
+    "license": "GPLv2",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "drupal/core-composer-scaffold": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        },
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
+    "require": {
+        "drupal/yoast_seo": "dev-2.x"
+    },
+    "require-dev": {
+        "composer/installers": "^2",
+        "drupal/core": "^10",
+        "drupal/core-composer-scaffold": "^10",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+        "drupal/coder": "^8.3.16",
+        "drupal/devel": "^5.0.2",
+        "drush/drush": "^11.0",
+        "mglaman/phpstan-drupal": "^1.1.25",
+        "phpstan/extension-installer": "^1.1.0",
+        "phpstan/phpstan": "^1.9.2",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.1.1",
+        "phpspec/prophecy-phpunit": "v2.0.1",
+        "symfony/phpunit-bridge": "^6.2"
+    },
+    "extra": {
+        "drupal-scaffold": {
+            "locations": {
+                "web-root": "html/"
+            }
+        },
+        "installer-paths": {
+            "html/core": [
+                "type:drupal-core"
+            ],
+            "html/modules/contrib/{$name}": [
+                "type:drupal-module"
+            ],
+            "html/profiles/contrib/${name}": [
+                "type:drupal-profile"
+            ],
+            "html/themes/contrib/{$name}": [
+                "type:drupal-theme"
+            ],
+            "html/libraries/{$name}": [
+                "type:drupal-library"
+            ],
+            "drush/contrib/{$name}": [
+                "type:drupal-drush"
+            ]
+        }
+    }
+}

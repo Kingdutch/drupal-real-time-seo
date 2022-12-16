@@ -1,0 +1,6 @@
+/vendor/
+/.editorconfig
+/.gitattributes
+/html/
+!/html/sites/default/settings.php
+!/html/sites/default/services.yml
