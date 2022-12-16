@@ -1,6 +1,11 @@
 /vendor/
 /.editorconfig
 /.gitattributes
-/html/
+
+!/html/
+/html/*
+!/html/sites/
+/html/sites/*
+!/html/sites/default/
+/html/sites/default/*
 !/html/sites/default/settings.php
-!/html/sites/default/services.yml
