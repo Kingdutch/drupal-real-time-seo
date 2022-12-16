@@ -63,3 +63,5 @@ RUN { \
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/
 
 WORKDIR /var/www
+
+ENV PATH=${PATH}:/var/www/vendor/bin
