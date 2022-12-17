@@ -115,7 +115,6 @@ class AnalysisFormHandler implements EntityHandlerInterface {
         'copy',
         [
           '#build_id' => TRUE,
-          '#action' => TRUE,
         ]
       );
     }
