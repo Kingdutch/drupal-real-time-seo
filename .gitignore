@@ -9,3 +9,9 @@
 !/html/sites/default/
 /html/sites/default/*
 !/html/sites/default/settings.php
+
+!/html/sites/simpletest/
+/html/sites/simpletest/*
+!/html/sites/simpletest/browser_output/
+/html/sites/simpletest/browser_output/*
+!/html/sites/simpletest/browser_output/.gitkeep

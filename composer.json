@@ -30,9 +30,9 @@
     "require-dev": {
         "composer/installers": "^2",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
-        "drupal/coder": "^8.3.16",
         "drupal/core": "^10",
         "drupal/core-composer-scaffold": "^10",
+        "drupal/core-dev": "^10",
         "drupal/devel": "^5.0.2",
         "drupal/paragraphs": "^1.15",
         "drush/drush": "^11.0",
@@ -41,8 +41,7 @@
         "phpstan/extension-installer": "^1.1.0",
         "phpstan/phpstan": "^1.9.2",
         "phpstan/phpstan-deprecation-rules": "^1.0",
-        "phpstan/phpstan-phpunit": "^1.1.1",
-        "symfony/phpunit-bridge": "^6.2"
+        "phpstan/phpstan-phpunit": "^1.1.1"
     },
     "scripts": {
         "docker-shell": "docker exec -ti rtseo_web bash",
@@ -51,7 +50,7 @@
         "cr": "docker exec -i rtse_web drush cr",
         "phpstan": "docker exec -i rtseo_web phpstan analyse html/modules/contrib/yoast_seo",
         "phpcs": "docker exec -i rtseo_web phpcs html/modules/contrib/yoast_seo",
-        "phpunit": "docker exec -i rtseo_web phpunit html/modules/contrib/yoast_seo"
+        "phpunit": "docker exec -i -e SIMPLETEST_BASE_URL='http://localhost' -e SIMPLETEST_DB='mysql://root:root@db/rtseo' -e BROWSERTEST_OUTPUT_DIRECTORY='/var/www/html/sites/simpletest/browser_output' rtseo_web phpunit --bootstrap /var/www/html/core/tests/bootstrap.php --printer '\\Drupal\\Tests\\Listeners\\HtmlOutputPrinter' html/modules/contrib/yoast_seo"
     },
     "extra": {
         "drupal-scaffold": {
