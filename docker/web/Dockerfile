@@ -60,6 +60,16 @@ RUN { \
 		echo 'opcache.fast_shutdown=1'; \
 	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
+# Install xdebug
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && { \
+          echo 'xdebug.mode=develop,debug'; \
+          echo 'xdebug.remote_autostart=off'; \
+          echo 'xdebug.idekey=PHPSTORM'; \
+          echo 'xdebug.client_host=host.docker.internal'; \
+       } >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/
 
 WORKDIR /var/www
