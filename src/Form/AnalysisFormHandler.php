@@ -68,10 +68,7 @@ class AnalysisFormHandler implements EntityHandlerInterface {
    *   The ajax response.
    */
   public function analysisSubmitAjax(array &$form, FormStateInterface $form_state) {
-    // Prevent firing accidental submissions from entity builder callbacks.
-    $form_state->setTemporaryValue('entity_validated', FALSE);
-
-    $preview_entity = $form_state->getFormObject()->buildEntity($form, $form_state);
+    $preview_entity = $form_state->getTemporaryValue('preview_entity');
     $preview_entity->in_preview = TRUE;
 
     $entity_data = $this->entityAnalyser->createEntityPreview($preview_entity);
@@ -134,7 +131,31 @@ class AnalysisFormHandler implements EntityHandlerInterface {
       '#ajax' => [
         'callback' => [$this, 'analysisSubmitAjax'],
       ],
+      // Add a validate step for the button.
+      // This will be called as latest validation callback.
+      // We can use that call to build our entity and save it temporary to be
+      // processed by analysisSubmitAjax callback.
+      '#validate' => [[$this, 'cacheProcessedEntityForPreview']],
     ];
+  }
+
+  /**
+   * Validation callback for the yoast_seo_preview_button.
+   *
+   * This is misused to build the entity for previewing. After the validation
+   * the form state is rebuilt and we end up with unprocessed values, which
+   * cannot be used to build the entity.
+   *
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state object.
+   */
+  public function cacheProcessedEntityForPreview(array $form, FormStateInterface $form_state) {
+    // Prevent firing accidental submissions from entity builder callbacks.
+    $form_state->setTemporaryValue('entity_validated', FALSE);
+    $preview_entity = $form_state->getFormObject()->buildEntity($form, $form_state);
+    $form_state->setTemporaryValue('preview_entity', $preview_entity);
   }
 
 }
