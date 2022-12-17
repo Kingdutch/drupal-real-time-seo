@@ -25,15 +25,13 @@ class ConfigurationPageTest extends BrowserTestBase {
    */
   protected static $modules = [
     'node',
-    // CKEditor module is required to avoid loading errors during node creation.
-    'ckeditor',
     'yoast_seo',
   ];
 
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp() : void {
     parent::setUp();
 
     // Create an article content type that we will use for testing.

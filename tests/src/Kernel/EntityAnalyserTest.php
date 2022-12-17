@@ -53,7 +53,7 @@ class EntityAnalyserTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp() : void {
     parent::setUp();
 
     // Set up everything needed to be able to use nodes.
