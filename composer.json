@@ -29,18 +29,18 @@
     },
     "require-dev": {
         "composer/installers": "^2",
-        "drupal/core": "^10",
-        "drupal/core-composer-scaffold": "^10",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
         "drupal/coder": "^8.3.16",
+        "drupal/core": "^10",
+        "drupal/core-composer-scaffold": "^10",
         "drupal/devel": "^5.0.2",
         "drush/drush": "^11.0",
         "mglaman/phpstan-drupal": "^1.1.25",
+        "phpspec/prophecy-phpunit": "v2.0.1",
         "phpstan/extension-installer": "^1.1.0",
         "phpstan/phpstan": "^1.9.2",
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-phpunit": "^1.1.1",
-        "phpspec/prophecy-phpunit": "v2.0.1",
         "symfony/phpunit-bridge": "^6.2"
     },
     "scripts": {
