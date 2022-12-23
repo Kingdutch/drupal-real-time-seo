@@ -4,10 +4,13 @@ default:
       paths:
         features: '%paths.base%/features'
       contexts:
-        - Behat\MinkExtension\Context\MinkContext
+        - Drupal\Tests\yoast_seo\Context\Setup
         - Drupal\DrupalExtension\Context\DrupalContext
         - Drupal\DrupalExtension\Context\DrushContext
-        - Drupal\Tests\yoast_seo\Context\Setup
+        - Drupal\DrupalExtension\Context\MinkContext
+        - Drupal\Tests\yoast_seo\Context\Log
+        - Drupal\Tests\yoast_seo\Context\Node
+        - Drupal\Tests\yoast_seo\Context\Widget
   extensions:
     DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension: ~
     Drupal\MinkExtension:
