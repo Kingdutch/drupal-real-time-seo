@@ -1,5 +1,3 @@
-FROM php:8.1-apache-bullseye
-
 # from https://www.drupal.org/docs/system-requirements/php-requirements
 FROM php:8.1-apache-bullseye
 
@@ -50,16 +48,6 @@ RUN set -eux; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
 	rm -rf /var/lib/apt/lists/*
 
-# set recommended PHP.ini settings
-# see https://secure.php.net/manual/en/opcache.installation.php
-RUN { \
-		echo 'opcache.memory_consumption=128'; \
-		echo 'opcache.interned_strings_buffer=8'; \
-		echo 'opcache.max_accelerated_files=4000'; \
-		echo 'opcache.revalidate_freq=60'; \
-		echo 'opcache.fast_shutdown=1'; \
-	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
-
 # Install xdebug
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug \
@@ -69,6 +57,23 @@ RUN pecl install xdebug \
           echo 'xdebug.idekey=PHPSTORM'; \
           echo 'xdebug.client_host=host.docker.internal'; \
        } >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# Install the MariaDB client (also aliased to `mysql`)
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+      mariadb-client \
+    ;
+
+# set recommended PHP.ini settings
+# see https://secure.php.net/manual/en/opcache.installation.php
+RUN { \
+		echo 'opcache.memory_consumption=128'; \
+		echo 'opcache.interned_strings_buffer=8'; \
+		echo 'opcache.max_accelerated_files=4000'; \
+		echo 'opcache.revalidate_freq=60'; \
+		echo 'opcache.fast_shutdown=1'; \
+	} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/
 
