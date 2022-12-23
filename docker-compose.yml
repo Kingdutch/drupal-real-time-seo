@@ -30,5 +30,19 @@ services:
       - "1080:1080"
     container_name: "rtseo_maildev"
 
+  chrome:
+    image: zenika/alpine-chrome
+    container_name: "rtseo_chrome"
+    command:
+      - "--headless" # Run in headless mode, i.e., without a UI or display server dependencies.
+      - "--disable-gpu" # Disables GPU hardware acceleration. If software renderer is not in place, then the GPU process won't launch.
+      - "--no-sandbox" # Disables the sandbox for all process types that are normally sandboxed. Meant to be used as a browser-level switch for testing purposes only.
+      - "--remote-debugging-address=0.0.0.0" # Enables remote debug over HTTP on the specified port.
+      - "--remote-debugging-port=9222" # Enables remote debug over HTTP on the specified port.
+    volumes:
+      - ./:/var/www:delegated
+    ports:
+      - '9222:9222'
+
 volumes:
   db_data:
