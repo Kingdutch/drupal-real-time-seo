@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\yoast_seo\Context;
 
+use Behat\Behat\Context\Environment\InitializedContextEnvironment;
 use Behat\Behat\Hook\Scope\AfterStepScope;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\MinkExtension\Context\RawMinkContext;
@@ -46,8 +47,11 @@ class Log extends RawMinkContext {
    * @BeforeScenario
    */
   public function beforeScenario(BeforeScenarioScope $scope) : void {
-    // @phpstan-ignore-next-line
-    \Drupal::service('module_installer')->install(['dblog']);
+    $environment = $scope->getEnvironment();
+    assert($environment instanceof InitializedContextEnvironment);
+    $setupContext = $environment->getContext(Setup::class);
+    assert($setupContext instanceof Setup);
+    $setupContext->assertModuleEnabled("dblog");
 
     $this->deleteAllLogMessages();
   }
