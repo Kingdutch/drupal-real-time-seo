@@ -8,8 +8,10 @@ default:
         - Drupal\DrupalExtension\Context\DrupalContext
         - Drupal\DrupalExtension\Context\DrushContext
         - Drupal\DrupalExtension\Context\MinkContext
+        - Drupal\Tests\yoast_seo\Context\Entity
         - Drupal\Tests\yoast_seo\Context\Log
         - Drupal\Tests\yoast_seo\Context\Node
+        - Drupal\Tests\yoast_seo\Context\Term
         - Drupal\Tests\yoast_seo\Context\Widget
   extensions:
     DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension: ~

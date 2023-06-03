@@ -52,6 +52,11 @@ class Setup implements Context {
    */
   public function assertModuleEnabled(string $module) : void {
     $this->drushContext->assertDrushCommandWithArgument("pm:install", "-y $module");
+    // The container for our bootstrap held by the DrupalExtension for behat must be rebuilt since it may not otherwise
+    // know about classes contained in the enabled module.
+    $kernel = \Drupal::service('kernel');
+    $kernel->invalidateContainer();
+    $kernel->rebuildContainer();
   }
 
 }
