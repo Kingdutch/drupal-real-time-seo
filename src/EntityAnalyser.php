@@ -2,10 +2,13 @@
 
 namespace Drupal\yoast_seo;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Theme\ThemeInitializationInterface;
+use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\metatag\MetatagManagerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -45,6 +48,21 @@ class EntityAnalyser {
   protected $router;
 
   /**
+   * The Drupal theme manager.
+   */
+  protected ThemeManagerInterface $themeManager;
+
+  /**
+   * Theme initialization logic.
+   */
+  protected ThemeInitializationInterface $themeInitialization;
+
+  /**
+   * The default theme used for viewing content.
+   */
+  protected string $defaultTheme;
+
+  /**
    * Constructs a new EntityPreviewer.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -55,17 +73,29 @@ class EntityAnalyser {
    *   The service for retrieving metatag data.
    * @param \Symfony\Component\Routing\RouterInterface $router
    *   A non-access checking router.
+   * @param \Drupal\Core\Theme\ThemeManagerInterface|null $theme_manager
+   *   The Drupal theme manager.
+   * @param \Drupal\Core\Theme\ThemeInitializationInterface|null $theme_initialization
+   *   The Drupal theme initializer.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface|null $configFactory
+   *   The Drupal config factory.
    */
   public function __construct(
     EntityTypeManagerInterface $entity_type_manager,
     RendererInterface $renderer,
     MetatagManagerInterface $metatag_manager,
-    RouterInterface $router
+    RouterInterface $router,
+    ?ThemeManagerInterface $theme_manager = NULL,
+    ?ThemeInitializationInterface $theme_initialization = NULL,
+    ?ConfigFactoryInterface $configFactory = NULL,
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->renderer = $renderer;
     $this->metatagManager = $metatag_manager;
     $this->router = $router;
+    $this->themeManager = $theme_manager ?? \Drupal::service('theme.manager');
+    $this->themeInitialization = $theme_initialization ?? \Drupal::service('theme.initialization');
+    $this->defaultTheme = ($configFactory ?? \Drupal::configFactory())->get("system.theme")->get('default');
   }
 
   /**
@@ -73,20 +103,24 @@ class EntityAnalyser {
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to retrieve preview data for.
+   * @param string|null $theme
+   *   The theme to use for the preview or the site default theme if NULL.
+   * @param string $view_mode
+   *   The view mode to use for the preview, 'full' by default.
    *
    * @return array
    *   An array containing the metatag values. Additionally the url is added if
    *   available under the `url` key and `text` contains a representation of the
    *   rendered HTML.
    */
-  public function createEntityPreview(EntityInterface $entity) {
+  public function createEntityPreview(EntityInterface $entity, ?string $theme = NULL, string $view_mode = 'full') {
     // Nodes want to know when they're being previewed.
     // @phpstan-ignore-next-line
     if (property_exists($entity, "in_preview")) {
       $entity->in_preview = TRUE;
     }
 
-    $html = $this->renderEntity($entity);
+    $html = $this->renderEntity($entity, $theme, $view_mode);
 
     $metatags = $entity instanceof ContentEntityInterface ? $this->metatagManager->tagsFromEntityWithDefaults($entity) : [];
 
@@ -141,16 +175,27 @@ class EntityAnalyser {
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity to render.
+   * @param string|null $theme
+   *   The theme to use for the preview or the site default theme if NULL.
+   * @param string $view_mode
+   *   The view mode to use for the preview, 'full' by default.
    *
    * @return \Drupal\Component\Render\MarkupInterface
    *   The markup that represents the rendered entity.
    */
-  public function renderEntity(EntityInterface $entity) {
+  public function renderEntity(EntityInterface $entity, ?string $theme = NULL, string $view_mode = 'full') {
     $type = $entity->getEntityTypeId();
     $view_builder = $this->entityTypeManager->getViewBuilder($type);
-    // @todo Make the view mode configurable in Yoast SEO settings.
-    $render_array = $view_builder->view($entity, 'full');
-    return $this->renderer->renderRoot($render_array);
+    $render_array = $view_builder->view($entity, $view_mode);
+
+    $active_theme = $this->themeManager->getActiveTheme();
+    $analyse_theme = $this->themeInitialization->getActiveThemeByName($theme ?? $this->defaultTheme);
+
+    $this->themeManager->setActiveTheme($analyse_theme);
+    $rendered = $this->renderer->renderRoot($render_array);
+    $this->themeManager->setActiveTheme($active_theme);
+
+    return $rendered;
   }
 
   /**

@@ -72,7 +72,11 @@ class AnalysisFormHandler implements EntityHandlerInterface {
     $preview_entity = $form_state->getTemporaryValue('preview_entity');
     $preview_entity->in_preview = TRUE;
 
-    $entity_data = $this->entityAnalyser->createEntityPreview($preview_entity);
+    $entity_data = $this->entityAnalyser->createEntityPreview(
+      $preview_entity,
+      $form['#yoast_settings']['render_theme'],
+      $form['#yoast_settings']['render_view_mode']
+    );
 
     // The current value of the alias field, if any,
     // takes precedence over the entity url.

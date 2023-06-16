@@ -9,7 +9,9 @@
   <arg name="extensions" value="php,module,inc,install,test,profile,theme" />
 
   <config name="drupal_core_version" value="9" />
-  <!--  Include all Drupal related rules but exclude some so we can gradually fix these. -->
-  <rule ref="Drupal" />
+  <rule ref="Drupal">
+    <!-- For some reason this rule doesn't like array spread. -->
+    <exclude name="Squiz.Arrays.ArrayDeclaration.KeySpecified" />
+  </rule>
 
 </ruleset>

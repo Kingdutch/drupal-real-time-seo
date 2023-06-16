@@ -68,4 +68,31 @@ class Setup implements Context {
     $kernel->rebuildContainer();
   }
 
+  /**
+   * Ensures a given theme is enabled.
+   *
+   * @param string $theme
+   *   The theme to enable.
+   *
+   * @Given theme :module is enabled
+   */
+  public function assertThemeEnabled(string $theme) : void {
+    $this->drushContext->assertDrushCommandWithArgument("theme:install", "-y $theme");
+    // The container for our bootstrap held by the DrupalExtension for behat
+    // must be rebuilt since it may not otherwise know about classes contained
+    // in the enabled module.
+    $kernel = \Drupal::service('kernel');
+    $kernel->invalidateContainer();
+    $kernel->rebuildContainer();
+  }
+
+  /**
+   * Update a configuration object.
+   *
+   * @Given config :config has key :key with value :value
+   */
+  public function updateSetting(string $config, string $key, string $value) {
+    $this->drushContext->assertDrushCommandWithArgument("cset", "$config $key $value");
+  }
+
 }

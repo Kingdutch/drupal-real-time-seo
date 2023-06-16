@@ -62,6 +62,7 @@ class EntityAnalyserTest extends KernelTestBase {
     $this->installEntitySchema('user');
     $this->installEntitySchema('node');
     $this->installEntitySchema('date_format');
+    $this->installConfig('system');
     $this->installConfig('filter');
     $this->installConfig('node');
 
@@ -75,11 +76,6 @@ class EntityAnalyserTest extends KernelTestBase {
       'name' => 'Article',
       'display_submitted' => FALSE,
     ]);
-    DateFormat::create([
-      'id' => 'fallback',
-      'label' => 'Fallback',
-      'pattern' => 'Y-m-d',
-    ])->save();
 
     // Add our test field to the node type.
     $this->createYoastSeoField('node', 'article', 'field_seo', 'SEO');

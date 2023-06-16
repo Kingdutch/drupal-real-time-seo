@@ -3,8 +3,11 @@
 namespace Drupal\yoast_seo\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\Extension;
+use Drupal\Core\Extension\ThemeHandlerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
@@ -42,6 +45,11 @@ class YoastSeoWidget extends WidgetBase implements ContainerFactoryPluginInterfa
   protected $seoManager;
 
   /**
+   * The Drupal theme manager.
+   */
+  protected ThemeHandlerInterface $themeHandler;
+
+  /**
    * Target elements for Javascript.
    *
    * @var array
@@ -64,17 +72,19 @@ class YoastSeoWidget extends WidgetBase implements ContainerFactoryPluginInterfa
       $configuration['settings'],
       $configuration['third_party_settings'],
       $container->get('entity_type.manager'),
-      $container->get('yoast_seo.manager')
+      $container->get('yoast_seo.manager'),
+      $container->get("theme_handler")
     );
   }
 
   /**
    * {@inheritdoc}
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EntityTypeManagerInterface $entity_type_manager, SeoManager $manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, array $third_party_settings, EntityTypeManagerInterface $entity_type_manager, SeoManager $manager, ThemeHandlerInterface $theme_handler) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
     $this->entityTypeManager = $entity_type_manager;
     $this->seoManager = $manager;
+    $this->themeHandler = $theme_handler;
   }
 
   /**
@@ -186,6 +196,8 @@ class YoastSeoWidget extends WidgetBase implements ContainerFactoryPluginInterfa
     return [
       'edit_title' => FALSE,
       'edit_description' => FALSE,
+      'render_theme' => NULL,
+      'render_view_mode' => 'default',
     ] + parent::defaultSettings();
   }
 
@@ -209,6 +221,36 @@ class YoastSeoWidget extends WidgetBase implements ContainerFactoryPluginInterfa
       '#default_value' => $this->getSetting('edit_description'),
     ];
 
+    $form['render_theme'] = [
+      '#type' => 'select',
+      '#title' => $this->t("Analysis theme"),
+      '#description' => $this->t("The theme that the preview will be rendered in. This may affect analysis results."),
+      '#options' => array_map(
+        fn (Extension $theme) => $theme->info['name'],
+        $this->themeHandler->listInfo()
+      ),
+      '#default_value' => $this->getSetting('render_theme'),
+    ];
+
+    $form['render_view_mode'] = [
+      '#type' => 'select',
+      '#title' => $this->t("Analysis view mode"),
+      '#description' => $this->t("The view mode that the preview will be rendered in. This may affect analysis results."),
+      '#options' => array_reduce(
+        $this->entityTypeManager->getStorage('entity_view_display')
+          ->loadByProperties([
+            'targetEntityType' => $this->fieldDefinition->getTargetEntityTypeId(),
+            'bundle' => $this->fieldDefinition->getTargetBundle(),
+          ]),
+        fn (array $options, EntityViewDisplayInterface $display) => [
+          ...$options,
+          $display->getMode() => $display->getMode(),
+        ],
+        []
+      ),
+      '#default_value' => $this->getSetting('render_view_mode'),
+    ];
+
     return $form;
   }
 
@@ -225,6 +267,13 @@ class YoastSeoWidget extends WidgetBase implements ContainerFactoryPluginInterfa
     if ($this->getSetting('edit_description')) {
       $summary[] = 'Description editing enabled';
     }
+
+    $render_theme = $this->getSetting("render_theme");
+    if ($render_theme !== NULL) {
+      $summary[] = 'Analysing in theme: ' . $this->themeHandler->getName($render_theme);
+    }
+
+    $summary[] = 'Analysing view mode: ' . $this->getSetting("render_view_mode");
 
     return $summary;
   }

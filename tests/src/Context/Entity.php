@@ -76,9 +76,12 @@ class Entity implements Context {
 
       $form_display = $display_repository->getFormDisplay($field['entity_type'], $field['bundle']);
       if (!empty($field['form_widget'])) {
+        $form_widget_settings = !empty($field['form_widget_settings']) ? json_decode($field['form_widget_settings'], TRUE, 512, JSON_THROW_ON_ERROR) : [];
+
         $form_display->setComponent($field['field_name'], [
           'type' => $field['form_widget'],
           'weight' => 0,
+          'settings' => $form_widget_settings,
         ]);
       }
       else {
