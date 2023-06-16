@@ -122,7 +122,11 @@ class EntityAnalyser {
     $data['url'] = !$entity->isNew() ? $entity->toUrl()->toString() : '';
 
     // Add our HTML as analyzable text (Yoast will sanitize).
-    $data['text'] = $html->__toString();
+    // Newlines are removed because the Yoast library will use them to find
+    // paragraph boundaries. However, we output HTML from Drupal which already
+    // contains properly formatted paragraphs. Besides, whitespace is
+    // meaningless within the context of HTML.
+    $data['text'] = str_replace("\n", "", $html->__toString());
 
     return $data;
   }
