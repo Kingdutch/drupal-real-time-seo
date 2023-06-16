@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -86,7 +87,7 @@ function yoast_seo_theme() {
  * @see \Drupal\Core\Entity\Annotation\EntityType
  */
 function yoast_seo_entity_type_build(array &$entity_types) {
-  /* @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
   foreach ($entity_types as &$entity_type) {
     if (!$entity_type->hasHandlerClass('yoast_seo_preview_form')) {
       $entity_type->setHandlerClass('yoast_seo_preview_form', AnalysisFormHandler::class);
@@ -106,11 +107,10 @@ function yoast_seo_metatags_alter(array &$metatags, array $context) {
     return;
   }
 
-  /** @var \Drupal\Core\Entity\FieldableEntityInterface $entity */
   $entity = $context['entity'];
 
   // Make sure we have a fieldable entity or our SeoManager will produce errors.
-  if (!($entity instanceof \Drupal\Core\Entity\FieldableEntityInterface)) {
+  if (!$entity instanceof FieldableEntityInterface) {
     return;
   }
 

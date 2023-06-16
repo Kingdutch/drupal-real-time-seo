@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Drupal\Tests\yoast_seo\Context;
@@ -11,6 +12,8 @@ use Behat\MinkExtension\Context\RawMinkContext;
 class Widget extends RawMinkContext {
 
   /**
+   * Check that the RTSEO widget was updated.
+   *
    * @When (I )wait for the widget to be updated
    */
   public function assertWidgetUpdated() : void {

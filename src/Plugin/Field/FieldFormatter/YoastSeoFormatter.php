@@ -2,8 +2,8 @@
 
 namespace Drupal\yoast_seo\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterBase;
 
 /**
  * Plugin implementation of the 'example_formatter' formatter.

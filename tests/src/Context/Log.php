@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Drupal\Tests\yoast_seo\Context;
@@ -27,7 +28,7 @@ class Log extends RawMinkContext {
    * Only contains levels we care about in tests (we ignore debug or info level
    * logs).
    *
-   * @return array<int, string>
+   * @return array<int,string>
    *   An array of log level labels.
    */
   protected static function getLogLevelLabelMap() : array {
@@ -113,14 +114,14 @@ class Log extends RawMinkContext {
   /**
    * Drupal can produce a lot of log messages that are not actual problems.
    *
-   * @param \StdClass $row
+   * @param object $row
    *   The row from the watchdog table.
    *
    * @return bool
    *   Whether to ignore this message.
    */
-  private function isIgnoredLogMessage($row) : bool {
-    return
+  private function isIgnoredLogMessage(object $row) : bool {
+    return (
       // Ignore notices from the user module since we don't really care about
       // users logging in or being deleted, those conditions are part of test
       // assertions.
@@ -133,7 +134,7 @@ class Log extends RawMinkContext {
       || ($row->type === 'comment' && (int) $row->severity === RfcLogLevel::NOTICE)
       // Ignore language creation notices.
       || ($row->type === 'language' && (int) $row->severity === RfcLogLevel::NOTICE && str_contains($row->message, "language has been created"))
-      ;
+    );
   }
 
   /**
@@ -141,13 +142,13 @@ class Log extends RawMinkContext {
    *
    * Modified from DbLogcontroller::formatMessage.
    *
-   * @param \StdClass $row
+   * @param object $row
    *   The watchdog database row.
    *
    * @return string|null
    *   A formatted string or NULL if message or variable were missing.
    */
-  private function formatMessage($row) : ?string {
+  private function formatMessage(object $row) : ?string {
     if (!isset($row->message, $row->variables)) {
       return NULL;
     }

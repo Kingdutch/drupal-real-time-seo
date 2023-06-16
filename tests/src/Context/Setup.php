@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Drupal\Tests\yoast_seo\Context;
@@ -7,11 +8,19 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Context\Environment\InitializedContextEnvironment;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 
+/**
+ * Set-up related tasks for our behat tests.
+ */
 class Setup implements Context {
 
+  /**
+   * The DrushContext to run Drush commands with.
+   */
   private DrushContext $drushContext;
 
   /**
+   * Provide a clean install before every scenario.
+   *
    * @BeforeScenario
    */
   public function installDrupal(BeforeScenarioScope $scope) : void {
@@ -51,8 +60,9 @@ class Setup implements Context {
    */
   public function assertModuleEnabled(string $module) : void {
     $this->drushContext->assertDrushCommandWithArgument("pm:install", "-y $module");
-    // The container for our bootstrap held by the DrupalExtension for behat must be rebuilt since it may not otherwise
-    // know about classes contained in the enabled module.
+    // The container for our bootstrap held by the DrupalExtension for behat
+    // must be rebuilt since it may not otherwise know about classes contained
+    // in the enabled module.
     $kernel = \Drupal::service('kernel');
     $kernel->invalidateContainer();
     $kernel->rebuildContainer();

@@ -5,13 +5,13 @@ namespace Drupal\yoast_seo\Plugin\Field\FieldWidget;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\yoast_seo\SeoManager;
 use Drupal\yoast_seo\Form\AnalysisFormHandler;
+use Drupal\yoast_seo\SeoManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -99,21 +99,21 @@ class YoastSeoWidget extends WidgetBase implements ContainerFactoryPluginInterfa
       '#id' => Html::getUniqueId('yoast_seo-' . $delta . '-focus_keyword'),
       '#type' => 'textfield',
       '#title' => $this->t('Focus keyword'),
-      '#default_value' => isset($items[$delta]->focus_keyword) ? $items[$delta]->focus_keyword : NULL,
+      '#default_value' => $items[$delta]->focus_keyword ?? NULL,
       '#description' => $this->t("Pick the main keyword or keyphrase that this post/page is about."),
     ];
 
     $element['overall_score'] = [
       '#theme' => 'overall_score',
       '#overall_score_target_id' => self::$jsTargets['overall_score_target_id'],
-      '#overall_score' => $this->seoManager->getScoreStatus(isset($items[$delta]->status) ? $items[$delta]->status : 0),
+      '#overall_score' => $this->seoManager->getScoreStatus($items[$delta]->status ?? 0),
     ];
 
     $element['status'] = [
       '#id' => Html::getUniqueId('yoast_seo-' . $delta . '-status'),
       '#type' => 'hidden',
       '#title' => $this->t('Real-time SEO status'),
-      '#default_value' => isset($items[$delta]->status) ? $items[$delta]->status : NULL,
+      '#default_value' => $items[$delta]->status ?? NULL,
       '#description' => $this->t("The SEO status in points."),
     ];
 
@@ -136,7 +136,7 @@ class YoastSeoWidget extends WidgetBase implements ContainerFactoryPluginInterfa
         $element['edit_' . $property] = [
           '#id' => Html::getUniqueId('yoast_seo-' . $delta . '-' . $property),
           '#type' => 'hidden',
-          '#default_value' => isset($items[$delta]->{$property}) ? $items[$delta]->{$property} : NULL,
+          '#default_value' => $items[$delta]->{$property} ?? NULL,
         ];
         $js_config['fields']['edit_' . $property] = $element['edit_' . $property]['#id'];
       }

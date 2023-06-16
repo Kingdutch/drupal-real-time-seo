@@ -5,8 +5,8 @@
  * Install, update, and uninstall functions for the Real-Time SEO module.
  */
 
-use Drupal\views\Views;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
+use Drupal\views\Views;
 
 /**
  * Remove the SEO status from the content overview.

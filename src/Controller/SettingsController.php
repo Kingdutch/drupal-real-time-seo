@@ -3,8 +3,8 @@
 namespace Drupal\yoast_seo\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Url;
 use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 /**
  * SettingsController.

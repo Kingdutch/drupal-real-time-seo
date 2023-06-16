@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Drupal\Tests\yoast_seo\Context;
@@ -9,15 +10,22 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 
+/**
+ * Provides entity related steps for our Behat tests.
+ */
 class Entity implements Context {
 
   /**
    * Create one or more fields at the start of a test.
    *
+   * @phpcs:disable Drupal.Files.LineLength.TooLong
+   *
    * Creates fields the form:
-   * | entity_type | bundle  | type              | field_name | field_label | cardinality | form_widget                | field_formatter            |
-   * | node        | article | text_with_summary | body       | Body        | 1           | text_textarea_with_summary | text_textarea_with_summary |
-   * | node        | article | yoast_seo         | field_seo  | SEO         | 1           | yoast_seo                  |                            |
+   *   | entity_type | bundle  | type              | field_name | field_label | cardinality | form_widget                | field_formatter            |
+   *   | node        | article | text_with_summary | body       | Body        | 1           | text_textarea_with_summary | text_textarea_with_summary |
+   *   | node        | article | yoast_seo         | field_seo  | SEO         | 1           | yoast_seo                  |                            |
+   *
+   * @phpcs:enable Drupal.Files.LineLength.TooLong
    *
    * If cardinality is omitted it will default to one. Use -1 for unlimited
    * cardinality.
