@@ -6,7 +6,6 @@ namespace Drupal\Tests\yoast_seo\Context;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\Environment\InitializedContextEnvironment;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
-use Drupal\DrupalExtension\Context\DrushContext;
 
 class Setup implements Context {
 

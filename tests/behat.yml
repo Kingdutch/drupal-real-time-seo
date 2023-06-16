@@ -5,9 +5,9 @@ default:
         features: '%paths.base%/features'
       contexts:
         - Drupal\Tests\yoast_seo\Context\Setup
-        - Drupal\DrupalExtension\Context\DrupalContext
-        - Drupal\DrupalExtension\Context\DrushContext
-        - Drupal\DrupalExtension\Context\MinkContext
+        - Drupal\Tests\yoast_seo\Context\DrupalContext
+        - Drupal\Tests\yoast_seo\Context\DrushContext
+        - Drupal\Tests\yoast_seo\Context\MinkContext
         - Drupal\Tests\yoast_seo\Context\Entity
         - Drupal\Tests\yoast_seo\Context\Log
         - Drupal\Tests\yoast_seo\Context\Node
