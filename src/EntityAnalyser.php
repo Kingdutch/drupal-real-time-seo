@@ -2,6 +2,7 @@
 
 namespace Drupal\yoast_seo;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
@@ -79,11 +80,15 @@ class EntityAnalyser {
    *   rendered HTML.
    */
   public function createEntityPreview(EntityInterface $entity) {
-    $entity->in_preview = TRUE;
+    // Nodes want to know when they're being previewed.
+    // @phpstan-ignore-next-line
+    if (property_exists($entity, "in_preview")) {
+      $entity->in_preview = TRUE;
+    }
 
     $html = $this->renderEntity($entity);
 
-    $metatags = $this->metatagManager->tagsFromEntityWithDefaults($entity);
+    $metatags = $entity instanceof ContentEntityInterface ? $this->metatagManager->tagsFromEntityWithDefaults($entity) : [];
 
     // Trigger hook_metatags_alter().
     // Allow modules to override tags or the entity used for token replacements.

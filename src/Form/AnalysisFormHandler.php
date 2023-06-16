@@ -5,6 +5,7 @@ namespace Drupal\yoast_seo\Form;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityHandlerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -153,7 +154,9 @@ class AnalysisFormHandler implements EntityHandlerInterface {
   public function cacheProcessedEntityForPreview(array $form, FormStateInterface $form_state) {
     // Prevent firing accidental submissions from entity builder callbacks.
     $form_state->setTemporaryValue('entity_validated', FALSE);
-    $preview_entity = $form_state->getFormObject()->buildEntity($form, $form_state);
+    $form_object = $form_state->getFormObject();
+    assert($form_object instanceof EntityFormInterface, "Calling " . __FUNCTION__ . " for a form that's not an entity form is invalid.");
+    $preview_entity = $form_object->buildEntity($form, $form_state);
     $form_state->setTemporaryValue('preview_entity', $preview_entity);
   }
 

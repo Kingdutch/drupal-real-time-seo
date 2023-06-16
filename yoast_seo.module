@@ -6,18 +6,24 @@
  */
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\field\FieldStorageConfigInterface;
 use Drupal\yoast_seo\Form\AnalysisFormHandler;
 
 /**
  * Implements hook_form_FORM_ID_alter().
  */
 function yoast_seo_form_field_storage_config_edit_form_alter(&$form, FormStateInterface $form_state) {
-  if ($form_state->getFormObject()->getEntity()->getType() == 'yoast_seo') {
+  $form_object = $form_state->getFormObject();
+  assert($form_object instanceof EntityFormInterface);
+  $field_storage_config = $form_object->getEntity();
+  assert($field_storage_config instanceof FieldStorageConfigInterface);
+  if ($field_storage_config->getType() === 'yoast_seo') {
     // Hide the cardinality field.
     $form['cardinality_container']['#access'] = FALSE;
     $form['cardinality_container']['#disabled'] = TRUE;

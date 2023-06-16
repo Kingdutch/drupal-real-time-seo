@@ -2,6 +2,8 @@
 
 // phpcs:ignoreFile
 
+assert(isset($app_root, $site_path));
+
 /**
  * @file
  * Drupal site-specific configuration file.
