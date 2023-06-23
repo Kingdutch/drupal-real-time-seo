@@ -87,7 +87,7 @@ class EntityAnalyser {
     RouterInterface $router,
     ?ThemeManagerInterface $theme_manager = NULL,
     ?ThemeInitializationInterface $theme_initialization = NULL,
-    ?ConfigFactoryInterface $configFactory = NULL,
+    ?ConfigFactoryInterface $configFactory = NULL
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->renderer = $renderer;
