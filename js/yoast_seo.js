@@ -292,7 +292,23 @@
       rating = ( score / 10 );
     }
 
-    document.getElementById(this.config.targets.overall_score).getElementsByClassName('score_value')[0].innerHTML = this.scoreToRating(rating);
+    const newLabelText = this.scoreToRating(rating);
+
+    // The element holding our score indicator bubble and label.
+    const scoreDisplay = document.getElementById(this.config.targets.overall_score);
+
+    // Get the current rating label so we can remove the class name for the color icon and replace it with the new one.
+    const scoreLabel = scoreDisplay.getElementsByClassName('score_value')[0];
+
+    // We convert the label to lowercase here, which is not as good as clean_css that's being called on the back-end,
+    // but is good enough for the constraints on the classes we use.
+    scoreDisplay.classList.remove(scoreLabel.innerHTML.toLowerCase());
+    scoreDisplay.classList.add(newLabelText.toLowerCase());
+
+    // Update the label for the user to the new text.
+    scoreLabel.innerHTML = newLabelText;
+
+    // Store the value in the input field that gets submitted.
     document.querySelector('[data-drupal-selector="' + this.config.fields.seo_status + '"]').setAttribute('value', rating);
   };
 
