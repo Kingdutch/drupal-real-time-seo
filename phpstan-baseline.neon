@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method Drupal\\\\yoast_seo\\\\Controller\\\\SettingsController\\:\\:index\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Controller/SettingsController.php
-
-		-
 			message: "#^Method Drupal\\\\yoast_seo\\\\EntityAnalyser\\:\\:createEntityPreview\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/EntityAnalyser.php
