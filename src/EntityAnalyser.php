@@ -213,7 +213,7 @@ class EntityAnalyser {
     foreach ($metatags as $tag => $value) {
       $metatags[$tag] = str_replace('[current-page:title]', $entity->label() ?? '', $value);
       // URL metatags cause issues for new nodes as they don't have a URL yet.
-      if ($entity->isNew() && (substr($tag, -4) === '_url')) {
+      if ($entity->isNew() && preg_match('/[.\-_:]url/', $value)) {
         $metatags[$tag] = '';
       }
     }
