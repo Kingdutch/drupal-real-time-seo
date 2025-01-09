@@ -101,7 +101,7 @@ class YoastSeoWidget extends WidgetBase implements ContainerFactoryPluginInterfa
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-    $form['#yoast_settings'] = $this->getSettings();
+    $form_state->set('yoast_settings', $this->getSettings());
 
     // Create the form element.
     $element += [

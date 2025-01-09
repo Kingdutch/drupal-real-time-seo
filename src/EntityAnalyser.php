@@ -119,6 +119,11 @@ class EntityAnalyser {
       $entity->in_preview = TRUE;
     }
 
+    // Dealing with a non-renderable entity. When configuring a field.
+    if (!$this->entityTypeManager->hasHandler($entity->getEntityTypeId(), 'view_builder')) {
+      return [];
+    }
+
     $html = $this->renderEntity($entity, $theme, $view_mode);
 
     $metatags = $entity instanceof ContentEntityInterface ? $this->metatagManager->tagsFromEntityWithDefaults($entity) : [];
