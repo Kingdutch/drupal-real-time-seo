@@ -305,8 +305,8 @@
 
     // We convert the label to lowercase here, which is not as good as clean_css that's being called on the back-end,
     // but is good enough for the constraints on the classes we use.
-    scoreDisplay.classList.remove(scoreLabel.innerHTML.toLowerCase());
-    scoreDisplay.classList.add(newLabelText.toLowerCase());
+    scoreDisplay.classList.remove(scoreLabel.innerHTML.toLowerCase().replace(' ', '-'));
+    scoreDisplay.classList.add(newLabelText.toLowerCase().replace(' ', '-'));
 
     // Update the label for the user to the new text.
     scoreLabel.innerHTML = newLabelText;
