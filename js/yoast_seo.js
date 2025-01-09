@@ -236,7 +236,10 @@
     // We use Drupal's AJAX progress indicator to check that we're not
     // interfering with an already running AJAX request. If an AJAX request is
     // already running then we reschedule the update.
-    if (!jQuery('.ajax-progress').length) {
+    if (
+      !jQuery('.ajax-progress').length &&
+       this.config.auto_refresh_seo_result
+    ) {
       // Click the refresh data button to perform a Drupal AJAX submit.
       this.$form.find('.yoast-seo-preview-submit-button').mousedown();
     }

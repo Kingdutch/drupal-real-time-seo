@@ -86,6 +86,7 @@ class SettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
+    $config = $this->config('yoast_seo.settings');
     $xmlsitemap_enabled = $this->moduleHandler->moduleExists('xmlsitemap');
     $simple_sitemap_enabled = $this->moduleHandler->moduleExists('simple_sitemap');
 
@@ -177,7 +178,32 @@ class SettingsForm extends ConfigFormBase {
       '#open' => TRUE,
     ];
 
+    $form['auto_refresh'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Auto refresh'),
+      '#open' => TRUE,
+    ];
+    $form['auto_refresh']['auto_refresh_seo_result'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable auto refresh of the Real Time SEO widget result'),
+      '#description' => $this->t('You can use this setting to enable auto refreshing of the Real Time SEO widget results after a value of a form field is changed and a field focus is lost. Please note that this may cause UI delays, waiting for e.g. the Metatag values to become available to calculate the score.'),
+      '#default_value' => $config->get('auto_refresh_seo_result'),
+    ];
+
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @phpstan-param array<string, mixed> $form
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) : void {
+    parent::submitForm($form, $form_state);
+
+    $this->config('yoast_seo.settings')
+      ->set('auto_refresh_seo_result', $form_state->getValue('auto_refresh_seo_result'))
+      ->save();
   }
 
 }

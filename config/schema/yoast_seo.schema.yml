@@ -8,6 +8,9 @@ yoast_seo.settings:
       sequence:
         type: string
         label: 'Score Label'
+    auto_refresh_seo_result:
+      type: boolean
+      label: 'Enable auto refresh Real Time SEO result'
 
 # Field instance.
 field.field_settings.yoast_seo:
