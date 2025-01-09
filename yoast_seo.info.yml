@@ -1,5 +1,5 @@
 name: Real-time SEO for Drupal
-description: Adds Real-time SEO page analysis and configuration
+description: 'Adds Real-time SEO page analysis and configuration.'
 package: SEO
 
 type: module
