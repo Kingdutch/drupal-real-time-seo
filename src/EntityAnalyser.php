@@ -115,7 +115,6 @@ class EntityAnalyser {
    */
   public function createEntityPreview(EntityInterface $entity, ?string $theme = NULL, string $view_mode = 'full') {
     // Nodes want to know when they're being previewed.
-    // @phpstan-ignore-next-line
     if (property_exists($entity, "in_preview")) {
       $entity->in_preview = TRUE;
     }
