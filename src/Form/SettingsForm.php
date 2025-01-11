@@ -3,6 +3,7 @@
 namespace Drupal\yoast_seo\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -42,10 +43,11 @@ class SettingsForm extends ConfigFormBase {
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
+    TypedConfigManagerInterface $typedConfigManager,
     ModuleHandlerInterface $module_handler,
     AccountInterface $current_user
   ) {
-    parent::__construct($config_factory);
+    parent::__construct($config_factory, $typedConfigManager);
 
     $this->moduleHandler = $module_handler;
     $this->currentUser = $current_user;
@@ -57,6 +59,7 @@ class SettingsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) : static {
     return new static(
       $container->get('config.factory'),
+      $container->get('config.typed'),
       $container->get('module_handler'),
       $container->get('current_user')
     );
