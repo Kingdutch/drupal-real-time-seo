@@ -46,6 +46,31 @@ class Setup implements Context {
       "--account-mail=admin@example.com",
     ]);
 
+    // When there's no database Drupal kicks into Install mode which sets up a
+    // read only config. Now that we have a database loaded we need to get
+    // Drupal out of that mode.
+    // Steps need to be in a specific order here since the install mode also
+    // doesn't load the system module (which every module under the sun assumes
+    // is loaded).
+    //
+    // 1.Remove the global that keeps the container in install mode.
+    // @phpstan-ignore-next-line
+    unset($GLOBALS['conf']['container_service_providers']['InstallerServiceProvider']);
+    // 2. Rebuild the container to ensure the Module Handler gets a new module
+    //    list.
+    $kernel = \Drupal::service('kernel');
+    $kernel->invalidateContainer();
+    $kernel->rebuildContainer();
+    // 3. Reload all the modules to ensure the system module is loaded
+    \Drupal::moduleHandler()->reload();
+    // 4. Flush all the caches to ensure we don't cache data from the previously
+    //    loaded database. This will trigger another container rebuild but
+    //    that's fine.
+    drupal_flush_all_caches();
+    // 5. We must clear the current user, since the container rebuild saves it,
+    //    but it references a non-existent user now.
+    \Drupal::currentUser()->setInitialAccountId(0);
+
     // We must enable the Olivero theme with block module so that we have a
     // logout link which is what is needed for DrupalContext to know whether
     // login succeeded.
