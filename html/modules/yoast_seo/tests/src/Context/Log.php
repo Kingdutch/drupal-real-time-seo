@@ -61,7 +61,7 @@ class Log extends RawMinkContext {
    *
    * @AfterStep
    */
-  public function assertCleanConsole() : void {
+  public function assertCleanConsole(AfterStepScope $scope) : void {
     $driver = $this->getSession()->getDriver();
     assert($driver instanceof ChromeDriver, "Not using ChromeDriver, console messages can't be tested.");
 
@@ -73,7 +73,11 @@ class Log extends RawMinkContext {
     $messages = $driver->getConsoleMessages();
 
     if (count($messages) !== 0) {
-      throw new \RuntimeException("A step generated messages on the console: \n\n" . implode("\n", $messages));
+      $message_strings = array_map(
+        fn (array $message) => "[{$message['level']}] {$message['text']}'\n{$message['url']}:{$message['line']}:{$message['column']}",
+        $messages
+      );
+      throw new \RuntimeException("A step generated messages on the console: \n\n" . implode("\n", $message_strings));
     }
   }
 
