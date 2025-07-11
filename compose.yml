@@ -20,6 +20,10 @@ services:
     build:
       <<: *build-dockerfile
       target: router-development
+      cache_from:
+        - type=gha
+      cache_to:
+        - type=gha,mode=max
     env_file:
       - .env
     depends_on:
@@ -41,6 +45,10 @@ services:
     build:
       <<: *build-dockerfile
       target: php-fpm-development
+      cache_from:
+        - type=gha
+      cache_to:
+        - type=gha,mode=max
     env_file:
       - .env
     depends_on:
@@ -61,6 +69,10 @@ services:
     build:
       <<: *build-dockerfile
       target: php-cli-development
+      cache_from:
+        - type=gha
+      cache_to:
+        - type=gha,mode=max
     env_file:
       - .env
     depends_on:

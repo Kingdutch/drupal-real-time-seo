@@ -148,6 +148,8 @@ RUN apk add --no-cache \
     && apk del $PHPIZE_DEPS \
     && rm -rf /tmp/pear
 
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
 USER web
 
 FROM php-fpm-environment AS php-fpm-development

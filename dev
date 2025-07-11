@@ -106,7 +106,7 @@ cmd_phpstan_help() {
 }
 
 cmd_phpcs() {
-    docker compose run --rm --no-deps cli phpcs --standard=html/modules/yoast_seo/phpcs.xml html/modules/yoast_seo
+    docker compose run --rm --no-deps cli phpcs --standard=html/modules/yoast_seo/phpcs.xml html/modules/yoast_seo $@
 }
 
 cmd_phpcs_help() {
