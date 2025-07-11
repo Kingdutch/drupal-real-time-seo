@@ -1,0 +1,113 @@
+name: "drupal-rtseo"
+
+# Common build configuration for all the targets built.
+x-build-dockerfile: &build-dockerfile
+  context: .
+  dockerfile: docker/Dockerfile
+  args:
+    NGINX_VERSION: $NGINX_VERSION
+    PHP_VERSION: $PHP_VERSION
+    COMPOSER_VERSION: $COMPOSER_VERSION
+
+services:
+  ##############################################################################
+  # Router                                                                     #
+  #                                                                            #
+  # The router is responsible for handling non-SSL web traffic and will use    #
+  # FastCGI to pass any PHP requests to the web.                               #
+  ##############################################################################
+  router:
+    build:
+      <<: *build-dockerfile
+      target: router-development
+    env_file:
+      - .env
+    depends_on:
+      - php-fpm
+    volumes_from:
+      - php-fpm:ro
+    ports:
+      - "80:80"
+    tmpfs:
+      - /tmp
+
+  ##############################################################################
+  # PHP-FPM                                                                    #
+  #                                                                            #
+  # The PHP-FPM container will receive PHP requests using the FastCGI protocol #
+  # from the router and run them with the Drupal application.                  #
+  ##############################################################################
+  php-fpm:
+    build:
+      <<: *build-dockerfile
+      target: php-fpm-development
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - .:/app/:delegated
+
+  ##############################################################################
+  # CLI                                                                        #
+  #                                                                            #
+  # The CLI container exists to allow running site-install, updates and cron.  #
+  # It's not started by default but can be invoked using `docker run`.         #
+  ##############################################################################
+  cli:
+    profiles:
+      - cli
+    build:
+      <<: *build-dockerfile
+      target: php-cli-development
+    env_file:
+      - .env
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - .:/app/:delegated
+
+  ##############################################################################
+  # MariaDB Database                                                           #
+  ##############################################################################
+  database:
+    image: mariadb:${MARIADB_VERSION}
+    env_file:
+      - .env
+    # See https://mariadb.com/kb/en/using-healthcheck-sh/.
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    command: mysqld --max_allowed_packet=16M
+
+  maildev:
+    image: maildev/maildev
+    ports:
+      - "1080:1080"
+
+  ##############################################################################
+  # Chrome                                                                     #
+  #                                                                            #
+  # Chrome is used as a browser to run Behat tests in and simulate user        #
+  # interaction against an Open Social site.                                   #
+  #                                                                            #
+  # It gains access to the filesystem to make file uploads work.               #
+  ##############################################################################
+  chrome:
+    image: zenika/alpine-chrome:${CHROME_VERSION:-}
+    command:
+      - "--headless" # Run in headless mode, i.e., without a UI or display server dependencies.
+      - "--disable-gpu" # Disables GPU hardware acceleration. If software renderer is not in place, then the GPU process won't launch.
+      - "--no-sandbox" # Disables the sandbox for all process types that are normally sandboxed. Meant to be used as a browser-level switch for testing purposes only.
+      - "--remote-debugging-address=0.0.0.0" # Enables remote debug over HTTP on the specified port.
+      - "--remote-debugging-port=9222" # Enables remote debug over HTTP on the specified port.
+    volumes_from:
+      - php-fpm
+
+volumes:
+  db_data:

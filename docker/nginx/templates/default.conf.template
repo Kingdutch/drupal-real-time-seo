@@ -1,0 +1,84 @@
+server {
+  listen 80 default_server;
+
+  # Use docker's DNS resolver for now, this likely breaks in production.
+  resolver 127.0.0.11;
+
+  gzip_static on;
+  gzip_http_version 1.0;
+  gzip_proxied any;
+  gzip_vary on;
+  gzip_comp_level 1;
+  gzip_types application/ecmascript application/javascript application/json;
+  gzip_types application/pdf application/postscript application/x-javascript;
+  gzip_types image/svg+xml text/css text/csv text/javascript text/plain text/xml;
+
+  # brotli_static on;
+  # brotli_comp_level 3;  # Equivalent to gzip level 1, but often with a higher compression ratio.
+  # brotli_types application/ecmascript application/javascript application/json;
+  # brotli_types application/pdf application/postscript application/x-javascript;
+  # brotli_types image/svg+xml text/css text/csv text/javascript text/plain text/xml;
+
+  # Avoid a configuration parse error when no passthru is used.
+  set $_rewrite_path "";
+  location @rewrite {
+        rewrite . $_rewrite_path;
+  }
+
+#  location = "" {
+#    alias /app/html;
+#
+#    set $_rewrite_path "/index.php";
+#    # The rewrite directive doesn't support named locations, while
+#    # try_files requires at least one non-fallback argument. If we don't
+#    # already have one, use a dummy argument to allow us to redirect to a
+#    # named location that rewrites to the passthru.
+#    try_files da39a3ee5e6b4b0d3255bfef95601890afd80709.nonexistent @rewrite;
+#    expires         -1s;
+#
+#  }
+
+  location "/" {
+    alias /app/html/;
+
+    location "/" {
+
+      set $_rewrite_path "/index.php";
+      # The rewrite directive doesn't support named locations, while
+      # try_files requires at least one non-fallback argument. If we don't
+      # already have one, use a dummy argument to allow us to redirect to a
+      # named location that rewrites to the passthru.
+      try_files da39a3ee5e6b4b0d3255bfef95601890afd80709.nonexistent @rewrite;
+      expires         -1s;
+    }
+
+    location ~ "\.(jpe?g|png|gif|svgz?|css|js|map|ico|bmp|eot|woff2?|otf|ttf)$" {
+
+      set $_rewrite_path "/index.php";
+      try_files       $uri @rewrite;
+      expires         30d;
+      gzip            on;
+      # brotli          on;
+    }
+
+    location ~ ".+?\.php(?=$|/)" {
+      set $_rewrite_path "/index.php";
+      try_files       $fastcgi_script_name @rewrite;
+
+      set $upstream_address ${RTSEO_ROUTER_UPSTREAM};
+      fastcgi_pass $upstream_address;
+
+      fastcgi_request_buffering on;
+      client_max_body_size 1g;
+
+      set $_document_root $document_root;
+
+      include fastcgi_params;
+
+      # Split the script name from the path info, set it as a variable so
+      # that it persists after try_files has resolved the actual filename.
+      fastcgi_split_path_info ^(.+?\.php(?=$|/))((?:/.*)?)$;
+      set $path_info  $fastcgi_path_info;
+    }
+  }
+}

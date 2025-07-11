@@ -823,15 +823,19 @@ $settings['migrate_node_migrate_type_classic'] = FALSE;
 # if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
 #   include $app_root . '/' . $site_path . '/settings.local.php';
 # }
-$databases['default']['default'] = array (
-  'database' => 'rtseo',
-  'username' => 'root',
-  'password' => 'root',
+
+$settings['file_private_path'] = $_ENV["RTSEO_PRIVATE_FILE_PATH"] ?? '/app/files_private';
+
+$settings['hash_salt'] = $_ENV["RTSEO_PROJECT_ENTROPY"];
+
+$databases['default']['default'] = [
+  'database' => $_ENV["RTSEO_DATABASE"],
+  'username' => $_ENV["RTSEO_DATABASE_USERNAME"],
+  'password' => $_ENV["RTSEO_DATABASE_PASSWORD"],
   'prefix' => '',
-  'host' => 'db',
-  'port' => '3306',
-  'namespace' => 'Drupal\\mysql\\Driver\\Database\\mysql',
+  'host' => $_ENV["RTSEO_DATABASE_HOST"],
+  'port' => $_ENV["RTSEO_DATABASE_PORT"],
   'driver' => 'mysql',
-  'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
-);
-$settings['config_sync_directory'] = 'sites/default/files/config_vZ3ZgDRK9lLnzizAuo5Vz29sbzJVNe6wAS0Y3vK4hZKvgP-wEfuO7mgsLwf18YKJBk9MWVWbBA/sync';
+];
+
+$settings['config_sync_directory'] = '/app/config/sync';

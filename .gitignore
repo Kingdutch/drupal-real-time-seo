@@ -2,6 +2,9 @@
 /.editorconfig
 /.gitattributes
 
+/config/sync/
+!/config/sync/.gitkeep
+
 !/html/
 /html/*
 !/html/sites/
@@ -15,3 +18,10 @@
 !/html/sites/simpletest/browser_output/
 /html/sites/simpletest/browser_output/*
 !/html/sites/simpletest/browser_output/.gitkeep
+
+/.claude/settings.local.json
+
+/files_private/*
+!/files_private/.htaccess
+
+.bash_history

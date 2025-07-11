@@ -21,6 +21,14 @@
     },
     "repositories": [
         {
+            "type": "path",
+            "url": "html/libraries/rtseo.js"
+        },
+        {
+            "type": "path",
+            "url": "html/modules/yoast_seo"
+        },
+        {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
         },
@@ -30,7 +38,7 @@
         }
     ],
     "require": {
-        "drupal/yoast_seo": "dev-2.x"
+        "drupal/yoast_seo": "self.version"
     },
     "require-dev": {
         "composer/installers": "^2",
@@ -71,6 +79,9 @@
             "html/core": [
                 "type:drupal-core"
             ],
+            "html/modules/yoast_seo": [
+                "drupal/yoast_seo"
+            ],
             "html/modules/contrib/{$name}": [
                 "type:drupal-module"
             ],
@@ -79,6 +90,9 @@
             ],
             "html/themes/contrib/{$name}": [
                 "type:drupal-theme"
+            ],
+            "html/libraries/rtseo.js": [
+                "goalgorilla/rtseo.js"
             ],
             "html/libraries/{$name}": [
                 "type:drupal-library"
