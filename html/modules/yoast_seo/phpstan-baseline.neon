@@ -271,50 +271,10 @@ parameters:
 			path: src/SeoManager.php
 
 		-
-			message: '#^Access to an undefined property object\:\:\$message\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/src/Context/Log.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$severity\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/src/Context/Log.php
-
-		-
-			message: '#^Access to an undefined property object\:\:\$type\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/src/Context/Log.php
-
-		-
-			message: '''
-				#^Return type of method Drupal\\Tests\\yoast_seo\\Context\\Log\:\:getLogMessages\(\) has typehint with deprecated class Drupal\\Core\\Database\\StatementWrapper\:
-				in drupal\:10\.1\.0 and is removed from drupal\:11\.0\.0\. Use
-				  \\Drupal\\Core\\Database\\StatementWrapperIterator instead\.$#
-			'''
-			identifier: return.deprecatedClass
-			count: 2
-			path: tests/src/Context/Log.php
-
-		-
 			message: '#^Method Drupal\\Tests\\yoast_seo\\Context\\Setup\:\:updateSetting\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: tests/src/Context/Setup.php
-
-		-
-			message: '#^Method Drupal\\Tests\\yoast_seo\\Functional\\ConfigurationPageTest\:\:testAdministerPermissionRequirement\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/src/Functional/ConfigurationPageTest.php
-
-		-
-			message: '#^Parameter \#1 \$account of method Drupal\\Tests\\BrowserTestBase\:\:drupalLogin\(\) expects Drupal\\Core\\Session\\AccountInterface, Drupal\\user\\Entity\\User\|false given\.$#'
-			identifier: argument.type
-			count: 2
-			path: tests/src/Functional/ConfigurationPageTest.php
 
 		-
 			message: '#^Method Drupal\\Tests\\yoast_seo\\Kernel\\EntityAnalyserTest\:\:createYoastSeoField\(\) has no return type specified\.$#'

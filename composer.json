@@ -16,7 +16,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Drupal\\Tests\\yoast_seo\\": "html/modules/contrib/yoast_seo/tests/src"
+            "Drupal\\Tests\\yoast_seo\\": "html/modules/yoast_seo/tests/src"
         }
     },
     "repositories": [

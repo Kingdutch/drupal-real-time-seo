@@ -3,6 +3,7 @@ Feature: Node analysis works in different circumstances
 
   Background:
     Given module node is enabled
+    And config yoast_seo.settings has key auto_refresh_seo_result with value true
     And content type:
       | type    | name    |
       | article | Article |
