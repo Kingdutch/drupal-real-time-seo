@@ -1,0 +1,197 @@
+########################################################################################################################
+# Subtree split for Drupal Real-Time SEO monorepo                                                                      #
+#                                                                                                                      #
+# Automatically splits subtrees when changes are pushed to tracked branches, and propagates tags to ensure version     #
+# alignment across all repositories. This workflow is branch-agnostic and can be extended to support additional        #
+# branches by updating the push triggers.                                                                              #
+#                                                                                                                      #
+# Subtrees:                                                                                                            #
+# - html/modules/yoast_seo -> https://git.drupal.org/project/yoast_seo.git (Drupal.org GitLab)                         #
+# - html/libraries/rtseo.js -> https://github.com/Kingdutch/RTSEO.js.git (GitHub)                                      #
+########################################################################################################################
+name: Subtree Split
+
+on:
+  push:
+    branches:
+      - 8.x-2.x
+    tags:
+      - '*'
+
+# All subtree split operations need to run in sequence because there's no easy way to make a branch operation and a tag
+# to that branch wait for one another. If we don't force them sequentially then we get race conditions for the tag push.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  subtree-split:
+    name: Subtree Split
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        subtree:
+          - name: "yoast_seo"
+            path: "html/modules/yoast_seo"
+            remote: "https://git.drupalcode.org/project/yoast_seo.git"
+            host: "git.drupal.org"
+          - name: "rtseo.js"
+            path: "html/libraries/rtseo.js"
+            remote: "https://github.com/Kingdutch/RTSEO.js.git"
+            host: "github.com"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history for subtree split
+          fetch-depth: 0
+
+      - name: Configure Git credentials for GitLab
+        if: matrix.subtree.host == 'git.drupal.org'
+        run: |
+          git config --global credential.https://git.drupalcode.org.helper store
+          echo "https://oauth2:${{ secrets.GITLAB_SUBTREE_SPLIT_TOKEN_KINGDUTCH }}@git.drupalcode.org" > ~/.git-credentials
+
+      - name: Configure Git credentials for GitHub
+        if: matrix.subtree.host == 'github.com'
+        run: |
+          # Remove the config from action/checkout before configuring for the store
+          git config --unset "http.https://github.com/.extraheader"
+          git config --global credential.https://github.com.helper store
+          echo "https://token:${{ secrets.GH_SUBTREE_SPLIT_TOKEN_KINGDUTCH }}@github.com" > ~/.git-credentials
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "22619-Kingdutch@users.noreply.drupalcode.org"
+
+      - name: Add subtree remote
+        run: git remote add ${{ matrix.subtree.name }} ${{ matrix.subtree.remote }}
+
+      - name: Fetch subtree remote
+        run: git fetch ${{ matrix.subtree.name }}
+
+      - name: Determine current branch
+        id: branch
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            # For tags, we want to work from the branch that contains the tag
+            # Get the branch name from the environment or default to main branch
+            BRANCH_NAME="${{ github.event.base_ref }}"
+            if [[ -z "${BRANCH_NAME}" ]]; then
+              echo "❌ Cannot determine branch for tag ${{ github.ref_name }}"
+              exit 1
+            fi
+          else
+            # For branch pushes, use the current branch
+            BRANCH_NAME="${{ github.ref_name }}"
+          fi
+          echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "Working with branch: ${BRANCH_NAME}"
+
+      - name: Perform subtree split
+        id: split
+        run: |
+          set -e
+
+          BRANCH_NAME="${{ steps.branch.outputs.branch_name }}"
+          SUBTREE_PATH="${{ matrix.subtree.path }}"
+          SUBTREE_NAME="${{ matrix.subtree.name }}"
+
+          echo "## Subtree Split: ${SUBTREE_NAME}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Path**: ${SUBTREE_PATH}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Remote**: ${{ matrix.subtree.remote }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${BRANCH_NAME}" >> $GITHUB_STEP_SUMMARY
+
+          # Check if the subtree path exists
+          if [[ ! -d "${SUBTREE_PATH}" ]]; then
+            echo "❌ Subtree path ${SUBTREE_PATH} does not exist, exiting"
+            echo "- **Status**: ❌ Stopped (Subtree path not found)" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          # Perform the subtree split
+          echo "Splitting subtree ${SUBTREE_PATH} to branch split-${BRANCH_NAME}"
+          git subtree split --prefix="${SUBTREE_PATH}" -b "split-${BRANCH_NAME}"
+
+          # Get commit information for reporting
+          SPLIT_COMMIT=$(git rev-parse --short "split-${BRANCH_NAME}")
+          echo "split_commit=${SPLIT_COMMIT}" >> $GITHUB_OUTPUT
+
+          # Report on the changes that were made.
+          # Check if remote branch exists and get its HEAD
+          REMOTE_HEAD=""
+          if git ls-remote --exit-code --heads "${SUBTREE_NAME}" "${BRANCH_NAME}" >/dev/null 2>&1; then
+            REMOTE_HEAD=$(git ls-remote --heads "${SUBTREE_NAME}" "${BRANCH_NAME}" | cut -f1 | cut -c1-7)
+            echo "- **Previous HEAD**: ${REMOTE_HEAD}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Previous HEAD**: (new branch)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "- **New HEAD**: ${SPLIT_COMMIT}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Push subtree changes
+        run: |
+          set -e
+
+          BRANCH_NAME="${{ steps.branch.outputs.branch_name }}"
+          SUBTREE_NAME="${{ matrix.subtree.name }}"
+
+          echo "Pushing split-${BRANCH_NAME} to ${SUBTREE_NAME}:${BRANCH_NAME}"
+
+          if git push "${SUBTREE_NAME}" "split-${BRANCH_NAME}:${BRANCH_NAME}"; then
+            echo "- **Push Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Push Status**: ❌ Failed" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: Propagate tag
+        if: github.ref_type == 'tag'
+        run: |
+          set -e
+
+          TAG_NAME="${{ github.ref_name }}"
+          SUBTREE_NAME="${{ matrix.subtree.name }}"
+          BRANCH_NAME="${{ steps.branch.outputs.branch_name }}"
+
+          echo "## Tag Propagation: ${TAG_NAME}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Target**: ${SUBTREE_NAME}" >> $GITHUB_STEP_SUMMARY
+
+          # Tag the split branch and push
+          # Tagging is forced because we want to move the tag to our subtree split in this workflow.
+          git checkout "split-${BRANCH_NAME}" && git tag -f "${TAG_NAME}"
+
+          if git push "${SUBTREE_NAME}" "refs/tags/${TAG_NAME}"; then
+            echo "- **Tag Status**: ✅ Tag ${TAG_NAME} pushed successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Tag Status**: ❌ Failed to push tag ${TAG_NAME}" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  summary:
+    name: Split Summary
+    runs-on: ubuntu-latest
+    needs: subtree-split
+    if: always()
+    steps:
+      - name: Generate summary
+        run: |
+          echo "# Subtree Split Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Ref**: ${{ github.ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.subtree-split.result }}" == "success" ]]; then
+            echo "✅ All subtree splits completed successfully" >> $GITHUB_STEP_SUMMARY
+          elif [[ "${{ needs.subtree-split.result }}" == "failure" ]]; then
+            echo "❌ Some subtree splits failed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Subtree split job was cancelled or skipped" >> $GITHUB_STEP_SUMMARY
+          fi
