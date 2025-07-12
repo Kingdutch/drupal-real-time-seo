@@ -7,6 +7,12 @@
 
 !/html/
 /html/*
+!/html/modules/
+/html/modules/*
+!/html/modules/yoast_seo/
+!/html/libraries/
+/html/libraries/*
+!/html/libraries/rtseo.js
 !/html/sites/
 /html/sites/*
 !/html/sites/default/
